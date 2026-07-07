@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#E9E4D8;font-family:'Space Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+a{color:#D9552C}a:hover{color:#B8431F}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit}
+@keyframes fcPop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes fcFade{from{opacity:0}to{opacity:1}}
+@keyframes fcSheet{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="--accent:{{accent}};max-width:430px;margin:0 auto;min-height:100dvh;background:#F6F2E9;display:flex;flex-direction:column;position:relative;color:#1C1A16;overflow:hidden">
+
+<!-- ================= DASHBOARD ================= -->
+<sc-if value="{{isDash}}" hint-placeholder-val="{{ true }}">
+<div data-screen-label="Dashboard" style="flex:1;padding:22px 18px 40px;animation:fcPop .25s ease">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div>
+      <div style="font:700 28px/1.1 'Space Grotesk',sans-serif;letter-spacing:-0.02em">Recall</div>
+      <div style="font:400 13px/1.4 'Space Grotesk',sans-serif;color:#8A8375;margin-top:4px">{{tagline}}</div>
+    </div>
+    <button onClick="{{openSettings}}" aria-label="Settings" style="width:44px;height:44px;border-radius:14px;border:1px solid rgba(0,0,0,.1);background:#fff;display:flex;align-items:center;justify-content:center;color:#1C1A16">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3.2"></circle><path d="M19.4 15a1.6 1.6 0 00.32 1.77l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.6 1.6 0 00-1.77-.32 1.6 1.6 0 00-1 1.47V21a2 2 0 11-4 0v-.09a1.6 1.6 0 00-1-1.47 1.6 1.6 0 00-1.77.32l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.6 1.6 0 00.32-1.77 1.6 1.6 0 00-1.47-1H3a2 2 0 110-4h.09a1.6 1.6 0 001.47-1 1.6 1.6 0 00-.32-1.77l-.06-.06a2 2 0 112.83-2.83l.06.06a1.6 1.6 0 001.77.32h0a1.6 1.6 0 001-1.47V3a2 2 0 114 0v.09a1.6 1.6 0 001 1.47h0a1.6 1.6 0 001.77-.32l.06-.06a2 2 0 112.83 2.83l-.06.06a1.6 1.6 0 00-.32 1.77v0a1.6 1.6 0 001.47 1H21a2 2 0 110 4h-.09a1.6 1.6 0 00-1.47 1z"></path></svg>
+    </button>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px">
+    <div style="background:#1C1A16;color:#F6F2E9;border-radius:16px;padding:14px 12px">
+      <div style="font:700 24px/1 'Space Grotesk',sans-serif">{{streak}}</div>
+      <div style="font:500 11px/1.3 'Space Grotesk',sans-serif;color:rgba(246,242,233,.6);margin-top:6px">day streak</div>
+    </div>
+    <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:16px;padding:14px 12px">
+      <div style="font:700 24px/1 'Space Grotesk',sans-serif;color:var(--accent,#D9552C)">{{accuracy}}</div>
+      <div style="font:500 11px/1.3 'Space Grotesk',sans-serif;color:#8A8375;margin-top:6px">accuracy</div>
+    </div>
+    <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:16px;padding:14px 12px">
+      <div style="font:700 24px/1 'Space Grotesk',sans-serif">{{timeSpent}}</div>
+      <div style="font:500 11px/1.3 'Space Grotesk',sans-serif;color:#8A8375;margin-top:6px">studied</div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:0 14px;margin-top:18px">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8A8375" stroke-width="2"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3" stroke-linecap="round"></path></svg>
+    <input value="{{query}}" onChange="{{setQuery}}" placeholder="Search decks and cards…" style="flex:1;border:none;outline:none;background:transparent;font:400 15px 'Space Grotesk',sans-serif;padding:14px 0;color:#1C1A16;min-width:0">
+    <sc-if value="{{hasQuery}}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{clearQuery}}" style="border:none;background:rgba(0,0,0,.06);border-radius:99px;width:24px;height:24px;font:600 13px 'Space Grotesk';color:#8A8375;display:flex;align-items:center;justify-content:center">✕</button>
+    </sc-if>
+  </div>
+
+  <!-- search results -->
+  <sc-if value="{{hasQuery}}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px">
+      <div style="font:600 12px 'Space Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#8A8375">{{searchSummary}}</div>
+      <sc-for list="{{cardHits}}" as="hit" hint-placeholder-count="0">
+        <div onClick="{{ hit.open }}" style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:14px;cursor:pointer">
+          <div style="font:600 15px/1.35 'Space Grotesk'">{{ hit.q }}</div>
+          <div style="font:400 13px/1.4 'Space Grotesk';color:#8A8375;margin-top:4px">{{ hit.a }}</div>
+          <div style="font:500 11px 'Space Grotesk';color:var(--accent,#D9552C);margin-top:8px">{{ hit.deckTitle }} →</div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- deck list -->
+  <sc-if value="{{noQuery}}" hint-placeholder-val="{{ true }}">
+    <div style="margin-top:22px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#8A8375">Your decks</div>
+        <div style="font:500 12px 'Space Grotesk';color:#8A8375">{{deckCount}}</div>
+      </div>
+      <sc-for list="{{deckList}}" as="dk" hint-placeholder-count="2">
+        <div onClick="{{ dk.open }}" style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:18px;cursor:pointer;box-shadow:0 1px 4px rgba(28,26,22,.04)">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+            <div style="font:600 17px/1.3 'Space Grotesk'">{{ dk.title }}</div>
+            <div style="font:700 15px 'Space Grotesk';color:var(--accent,#D9552C);flex:none">{{ dk.pct }}%</div>
+          </div>
+          <div style="height:6px;background:rgba(0,0,0,.07);border-radius:99px;margin-top:12px;overflow:hidden">
+            <div style="height:100%;background:var(--accent,#D9552C);border-radius:99px;width:{{ dk.pctW }}"></div>
+          </div>
+          <div style="display:flex;gap:14px;margin-top:10px;font:500 12px 'Space Grotesk';color:#8A8375">
+            <span>{{ dk.total }} cards</span>
+            <span style="color:#2E7D4F">{{ dk.mastered }} mastered</span>
+            <span>{{ dk.remaining }} remaining</span>
+          </div>
+        </div>
+      </sc-for>
+      <button onClick="{{newDeckOpen}}" style="border:2px dashed rgba(0,0,0,.18);background:transparent;border-radius:18px;padding:18px;font:600 15px 'Space Grotesk';color:#8A8375;width:100%">+ New deck</button>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ================= DECK VIEW ================= -->
+<sc-if value="{{isDeck}}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Deck" style="flex:1;padding:18px 18px 40px;animation:fcPop .25s ease">
+  <div style="display:flex;align-items:center;gap:10px">
+    <button onClick="{{toDash}}" aria-label="Back" style="width:44px;height:44px;border-radius:14px;border:1px solid rgba(0,0,0,.1);background:#fff;display:flex;align-items:center;justify-content:center;flex:none">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#1C1A16" stroke-width="2" stroke-linecap="round"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+    <div style="flex:1;min-width:0;font:700 20px/1.2 'Space Grotesk';overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{deckTitle}}</div>
+    <button onClick="{{editDeckOpen}}" aria-label="Rename deck" style="width:44px;height:44px;border-radius:14px;border:1px solid rgba(0,0,0,.1);background:#fff;display:flex;align-items:center;justify-content:center;flex:none">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#1C1A16" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+    </button>
+  </div>
+
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:16px;margin-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div style="font:600 13px 'Space Grotesk';color:#8A8375">Deck progress</div>
+      <div style="font:700 16px 'Space Grotesk';color:var(--accent,#D9552C)">{{deckPct}}%</div>
+    </div>
+    <div style="height:8px;background:rgba(0,0,0,.07);border-radius:99px;margin-top:10px;overflow:hidden">
+      <div style="height:100%;background:var(--accent,#D9552C);border-radius:99px;width:{{deckPctW}}"></div>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:10px;font:500 13px 'Space Grotesk';color:#8A8375">
+      <span style="color:#2E7D4F">● {{deckMastered}} mastered</span>
+      <span>● {{deckRemaining}} remaining</span>
+    </div>
+  </div>
+
+  <sc-if value="{{needMore}}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FBF0DC;border:1px solid #E4C88A;border-radius:14px;padding:12px 14px;margin-top:12px;font:500 13px/1.5 'Space Grotesk';color:#7A5B1E">⚠ A deck needs at least 4 cards to practice. Add {{cardsNeeded}} more.</div>
+  </sc-if>
+
+  <button onClick="{{practice}}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:{{practiceBg}};color:#fff;border:none;border-radius:16px;padding:17px;font:600 17px 'Space Grotesk';width:100%;margin-top:14px">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 5l12 7-12 7z"></path></svg>
+    Practice this deck
+  </button>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+    <button onClick="{{addCardOpen}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:14px;font:600 14px 'Space Grotesk';color:#1C1A16">+ Add card</button>
+    <button onClick="{{bulkOpen}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:14px;font:600 14px 'Space Grotesk';color:#1C1A16">⇪ Bulk add</button>
+  </div>
+
+  <div style="margin-top:22px;display:flex;flex-direction:column;gap:8px">
+    <div style="font:600 12px 'Space Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#8A8375">Cards · {{deckCardCount}}</div>
+    <sc-if value="{{deckEmpty}}" hint-placeholder-val="{{ false }}">
+      <div style="border:2px dashed rgba(0,0,0,.15);border-radius:16px;padding:30px 20px;text-align:center;font:500 14px/1.5 'Space Grotesk';color:#8A8375">No cards yet. Add cards one by one, or paste many at once with Bulk add.</div>
+    </sc-if>
+    <sc-for list="{{deckCards}}" as="c" hint-placeholder-count="3">
+      <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div style="font:600 15px/1.35 'Space Grotesk'">{{ c.q }}</div>
+          <div style="font:400 13px/1.4 'Space Grotesk';color:#8A8375;margin-top:4px">{{ c.a }}</div>
+          <sc-if value="{{ c.mastered }}" hint-placeholder-val="{{ false }}">
+            <div style="display:inline-block;font:600 10px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#2E7D4F;background:#E7F3EB;border-radius:99px;padding:3px 8px;margin-top:8px">Mastered</div>
+          </sc-if>
+        </div>
+        <div style="display:flex;gap:6px;flex:none">
+          <button onClick="{{ c.edit }}" aria-label="Edit card" style="width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.1);background:#F6F2E9;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#1C1A16" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+          </button>
+          <button onClick="{{ c.del }}" aria-label="Delete card" style="width:36px;height:36px;border-radius:10px;border:1px solid rgba(0,0,0,.1);background:#F6F2E9;display:flex;align-items:center;justify-content:center">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#C13B2A" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"></path></svg>
+          </button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+
+  <button onClick="{{delDeckAsk}}" style="border:none;background:transparent;font:600 14px 'Space Grotesk';color:#C13B2A;margin-top:22px;width:100%;padding:12px">Delete this deck</button>
+</div>
+</sc-if>
+
+<!-- ================= STUDY ================= -->
+<sc-if value="{{isStudy}}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Study session" style="flex:1;display:flex;flex-direction:column;padding:18px 18px 20px;animation:fcPop .25s ease">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="flex:1;min-width:0;font:600 14px/1.2 'Space Grotesk';color:#8A8375;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{deckTitle}}</div>
+    <button onClick="{{openVoice}}" aria-label="Voice languages" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.1);background:#fff;color:#1C1A16;flex:none;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c2.5 2.5 3.8 5.6 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.6-3.8-9S9.5 5.5 12 3z"></path></svg>
+    </button>
+    <button onClick="{{addCardOpen}}" aria-label="Add card" style="width:40px;height:40px;border-radius:12px;border:1px solid rgba(0,0,0,.1);background:#fff;font:600 20px 'Space Grotesk';color:#1C1A16;flex:none">+</button>
+    <button onClick="{{endSession}}" style="border:1px solid rgba(0,0,0,.12);background:#1C1A16;color:#F6F2E9;border-radius:12px;padding:10px 14px;font:600 13px 'Space Grotesk';flex:none;white-space:nowrap">End</button>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:12px;margin-top:14px">
+    <div style="flex:1;height:6px;background:rgba(0,0,0,.08);border-radius:99px;overflow:hidden">
+      <div style="height:100%;background:var(--accent,#D9552C);border-radius:99px;width:{{progressW}};transition:width .3s ease"></div>
+    </div>
+    <div style="font:600 13px 'Space Grotesk';color:#8A8375;flex:none">{{turnNum}} / {{turnTotal}}</div>
+    <button onClick="{{toggleHidden}}" style="display:flex;align-items:center;gap:6px;border:1px solid rgba(0,0,0,.12);background:{{hiddenChipBg}};color:{{hiddenChipFg}};border-radius:99px;padding:7px 11px;font:600 11px 'Space Grotesk';flex:none;white-space:nowrap">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+      Hidden options
+    </button>
+  </div>
+
+  <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:20px;padding:20px;margin-top:16px;box-shadow:0 2px 10px rgba(28,26,22,.05)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font:600 11px 'Space Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#8A8375;flex:1">{{turnBadge}}</span>
+      <button onClick="{{editTurnCard}}" aria-label="Edit this card" style="width:38px;height:38px;border-radius:11px;border:1px solid rgba(0,0,0,.1);background:#F6F2E9;display:flex;align-items:center;justify-content:center">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#1C1A16" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"></path></svg>
+      </button>
+      <button onClick="{{speakQ}}" aria-label="Speak question" style="width:38px;height:38px;border-radius:11px;border:1px solid rgba(0,0,0,.1);background:#F6F2E9;display:flex;align-items:center;justify-content:center;color:#1C1A16">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"></path><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
+      </button>
+    </div>
+    <div style="font:600 24px/1.35 'Space Grotesk';margin-top:12px">{{turnQ}}</div>
+  </div>
+
+  <sc-if value="{{covered}}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{reveal}}" style="flex:1;min-height:240px;margin-top:14px;border:2px dashed rgba(0,0,0,.18);border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#8A8375;cursor:pointer">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-6.5 0-10-8-10-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c6.5 0 10 8 10 8a18.5 18.5 0 01-2.16 3.19M1 1l22 22" stroke-linecap="round"></path></svg>
+      <div style="font:600 15px 'Space Grotesk'">Tap to reveal options</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{showOptions}}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px;animation:fcFade .2s ease">
+      <sc-for list="{{options}}" as="opt" hint-placeholder-count="4">
+        <div onClick="{{ opt.pick }}" role="button" style="display:flex;align-items:center;gap:12px;background:{{ opt.bg }};border:2px solid {{ opt.border }};border-radius:16px;padding:14px 14px;min-height:60px;cursor:pointer;opacity:{{ opt.opacity }}">
+          <div style="width:30px;height:30px;border-radius:9px;background:{{ opt.chipBg }};color:{{ opt.chipFg }};display:flex;align-items:center;justify-content:center;font:700 13px 'Space Grotesk';flex:none">{{ opt.letter }}</div>
+          <div style="flex:1;font:500 17px/1.35 'Space Grotesk';color:{{ opt.fg }}">{{ opt.text }}</div>
+          <button onClick="{{ opt.speak }}" aria-label="Speak option" style="width:36px;height:36px;border-radius:10px;border:none;background:rgba(0,0,0,.05);display:flex;align-items:center;justify-content:center;color:{{ opt.fg }};flex:none">
+            <svg viewBox="0 0 24 24" width="15" height="15"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"></path><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <div style="flex:1"></div>
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <button onClick="{{goBack}}" style="flex:1;border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk';color:{{backFg}};opacity:{{backOpacity}}">← Back</button>
+    <sc-if value="{{showSkip}}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{skip}}" style="flex:1;border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk';color:#1C1A16">Skip →</button>
+    </sc-if>
+    <sc-if value="{{showNext}}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{next}}" style="flex:1.4;border:none;background:var(--accent,#D9552C);color:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk'">{{nextLabel}}</button>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= RESULTS ================= -->
+<sc-if value="{{isResults}}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Results" style="flex:1;padding:22px 18px 40px;animation:fcPop .25s ease">
+  <div style="text-align:center;padding:10px 0 0">
+    <div style="font:600 12px 'Space Grotesk';letter-spacing:.12em;text-transform:uppercase;color:#8A8375">Session complete</div>
+    <div style="font:700 56px/1 'Space Grotesk';margin-top:12px">{{resScore}}</div>
+    <div style="font:500 15px 'Space Grotesk';color:#8A8375;margin-top:6px">{{resAccuracy}} accuracy · {{resTime}}</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:20px">
+    <div style="background:#E7F3EB;border-radius:14px;padding:12px;text-align:center">
+      <div style="font:700 20px 'Space Grotesk';color:#2E7D4F">{{resCorrect}}</div>
+      <div style="font:500 11px 'Space Grotesk';color:#2E7D4F">correct</div>
+    </div>
+    <div style="background:#FBEAE6;border-radius:14px;padding:12px;text-align:center">
+      <div style="font:700 20px 'Space Grotesk';color:#C13B2A">{{resWrong}}</div>
+      <div style="font:500 11px 'Space Grotesk';color:#C13B2A">wrong</div>
+    </div>
+    <div style="background:rgba(0,0,0,.06);border-radius:14px;padding:12px;text-align:center">
+      <div style="font:700 20px 'Space Grotesk';color:#8A8375">{{resSkipped}}</div>
+      <div style="font:500 11px 'Space Grotesk';color:#8A8375">skipped</div>
+    </div>
+  </div>
+
+  <sc-if value="{{hasMistakes}}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{retryMistakes}}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--accent,#D9552C);color:#fff;border:none;border-radius:16px;padding:17px;font:600 17px 'Space Grotesk';width:100%;margin-top:16px">↻ Retry mistakes first</button>
+  </sc-if>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+    <button onClick="{{practice}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:14px;font:600 14px 'Space Grotesk';color:#1C1A16">Practice again</button>
+    <button onClick="{{toDash}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:14px;font:600 14px 'Space Grotesk';color:#1C1A16">Dashboard</button>
+  </div>
+
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:8px">
+    <div style="font:600 12px 'Space Grotesk';letter-spacing:.1em;text-transform:uppercase;color:#8A8375">Marksheet</div>
+    <sc-for list="{{resRows}}" as="r" hint-placeholder-count="4">
+      <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-left:4px solid {{ r.color }};border-radius:12px;padding:12px 14px">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline">
+          <div style="font:600 14px/1.35 'Space Grotesk';flex:1">{{ r.q }}</div>
+          <div style="font:700 11px 'Space Grotesk';letter-spacing:.06em;text-transform:uppercase;color:{{ r.color }};flex:none">{{ r.status }}</div>
+        </div>
+        <div style="font:400 13px/1.5 'Space Grotesk';color:#8A8375;margin-top:4px">{{ r.detail }}</div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= TOAST ================= -->
+<sc-if value="{{hasToast}}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1C1A16;color:#F6F2E9;border-radius:12px;padding:12px 18px;font:500 14px 'Space Grotesk';box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:60;animation:fcPop .2s ease;max-width:88vw;text-align:center">{{toast}}</div>
+</sc-if>
+
+<!-- ================= ONBOARDING ================= -->
+<sc-if value="{{showOnboarding}}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="Onboarding" style="position:fixed;inset:0;background:rgba(28,26,22,.55);backdrop-filter:blur(3px);z-index:70;display:flex;align-items:flex-end;justify-content:center;animation:fcFade .3s ease">
+    <div style="width:100%;max-width:430px;background:#F6F2E9;border-radius:24px 24px 0 0;padding:28px 24px 34px;animation:fcSheet .35s ease">
+      <div style="font:700 24px/1.2 'Space Grotesk'">Welcome to Recall 👋</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px">
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:9px;background:var(--accent,#D9552C);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Space Grotesk';flex:none">1</div><div style="font:400 14px/1.5 'Space Grotesk'">We've set up two sample decks so you can try things right away. Everything is saved on your device.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:9px;background:var(--accent,#D9552C);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Space Grotesk';flex:none">2</div><div style="font:400 14px/1.5 'Space Grotesk'">Practice turns your cards into 4-choice quizzes. Answer, skip, or go back to review — a deck needs at least 4 cards.</div></div>
+        <div style="display:flex;gap:12px;align-items:flex-start"><div style="width:28px;height:28px;border-radius:9px;background:var(--accent,#D9552C);color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px 'Space Grotesk';flex:none">3</div><div style="font:400 14px/1.5 'Space Grotesk'">Tap the speaker icons to hear questions and answers aloud — pick languages in Settings (9 supported, incl. Hindi, Tamil &amp; Arabic).</div></div>
+      </div>
+      <button onClick="{{finishOnboarding}}" style="background:#1C1A16;color:#F6F2E9;border:none;border-radius:16px;padding:17px;font:600 16px 'Space Grotesk';width:100%;margin-top:24px">Start learning</button>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ================= MODALS ================= -->
+<sc-if value="{{hasModal}}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{closeModal}}" style="position:fixed;inset:0;background:rgba(28,26,22,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center;animation:fcFade .2s ease">
+    <div onClick="{{stop}}" style="width:100%;max-width:430px;background:#F6F2E9;border-radius:24px 24px 0 0;padding:24px 20px 30px;animation:fcSheet .3s ease;max-height:86dvh;overflow-y:auto">
+
+      <sc-if value="{{isModalDeckTitle}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 20px 'Space Grotesk'">{{deckModalTitle}}</div>
+        <input value="{{mTitle}}" onChange="{{mTitleChange}}" placeholder="Deck title" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:15px;font:500 16px 'Space Grotesk';margin-top:16px;background:#fff;outline:none">
+        <button onClick="{{saveDeckModal}}" style="background:var(--accent,#D9552C);color:#fff;border:none;border-radius:14px;padding:16px;font:600 16px 'Space Grotesk';width:100%;margin-top:14px">Save</button>
+      </sc-if>
+
+      <sc-if value="{{isModalCard}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 20px 'Space Grotesk'">{{cardModalTitle}}</div>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:16px">Question</div>
+        <textarea value="{{mQ}}" onChange="{{mQChange}}" rows="2" placeholder="e.g. Capital of France?" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px/1.4 'Space Grotesk';margin-top:8px;background:#fff;outline:none;resize:vertical"></textarea>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:14px">Answer</div>
+        <textarea value="{{mA}}" onChange="{{mAChange}}" rows="2" placeholder="e.g. Paris" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px/1.4 'Space Grotesk';margin-top:8px;background:#fff;outline:none;resize:vertical"></textarea>
+        <button onClick="{{saveCard}}" style="background:var(--accent,#D9552C);color:#fff;border:none;border-radius:14px;padding:16px;font:600 16px 'Space Grotesk';width:100%;margin-top:16px">Save card</button>
+        <sc-if value="{{isEditingCard}}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{delCardFromModal}}" style="border:none;background:transparent;font:600 14px 'Space Grotesk';color:#C13B2A;width:100%;padding:14px;margin-top:4px">Delete card</button>
+        </sc-if>
+      </sc-if>
+
+      <sc-if value="{{isModalBulk}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 20px 'Space Grotesk'">Bulk add cards</div>
+        <div style="font:400 13px/1.5 'Space Grotesk';color:#8A8375;margin-top:8px">One card per line. Put <b>=</b> between question and answer:<br>France = Paris</div>
+        <textarea value="{{bulk}}" onChange="{{bulkChange}}" rows="10" placeholder="France = Paris&#10;Japan = Tokyo&#10;Egypt = Cairo" style="width:100%;min-height:240px;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px/1.6 'Space Grotesk';margin-top:12px;background:#fff;outline:none;resize:vertical"></textarea>
+        <button onClick="{{saveBulk}}" style="background:var(--accent,#D9552C);color:#fff;border:none;border-radius:14px;padding:16px;font:600 16px 'Space Grotesk';width:100%;margin-top:14px">Add cards</button>
+      </sc-if>
+
+      <sc-if value="{{isModalSettings}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 20px 'Space Grotesk'">Settings</div>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:18px">Question voice language</div>
+        <select value="{{qLang}}" onChange="{{setQLang}}" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px 'Space Grotesk';margin-top:8px;background:#fff;outline:none;-webkit-appearance:none">
+          <sc-for list="{{langs}}" as="l" hint-placeholder-count="3"><option value="{{ l.code }}">{{ l.name }}</option></sc-for>
+        </select>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:14px">Answer voice language</div>
+        <select value="{{aLang}}" onChange="{{setALang}}" style="width:100%;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px 'Space Grotesk';margin-top:8px;background:#fff;outline:none;-webkit-appearance:none">
+          <sc-for list="{{langs}}" as="l2" hint-placeholder-count="3"><option value="{{ l2.code }}">{{ l2.name }}</option></sc-for>
+        </select>
+        <div onClick="{{toggleHidden}}" style="display:flex;justify-content:space-between;align-items:center;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:14px;margin-top:16px;cursor:pointer">
+          <div>
+            <div style="font:600 15px 'Space Grotesk'">Hidden options mode</div>
+            <div style="font:400 12px/1.4 'Space Grotesk';color:#8A8375;margin-top:2px">Hide choices until you tap to reveal</div>
+          </div>
+          <div style="width:48px;height:28px;border-radius:99px;background:{{hiddenToggleBg}};position:relative;transition:background .2s;flex:none">
+            <div style="position:absolute;top:3px;left:{{hiddenKnobLeft}};width:22px;height:22px;border-radius:99px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:left .2s"></div>
+          </div>
+        </div>
+        <sc-if value="{{noTTS}}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FBF0DC;border:1px solid #E4C88A;border-radius:12px;padding:12px;margin-top:14px;font:500 12px/1.5 'Space Grotesk';color:#7A5B1E">⚠ Text-to-speech isn't supported in this browser. Speaker buttons will be silent.</div>
+        </sc-if>
+        <button onClick="{{closeModal}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk';width:100%;margin-top:18px">Done</button>
+      </sc-if>
+
+      <sc-if value="{{isModalVoice}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 20px 'Space Grotesk'">Voice languages</div>
+        <div style="font:400 13px/1.5 'Space Grotesk';color:#8A8375;margin-top:6px">Pick a voice for questions and one for answers. Changes apply instantly — even mid-session.</div>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:18px">Question voice</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select value="{{qLang}}" onChange="{{setQLang}}" style="flex:1;min-width:0;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px 'Space Grotesk';background:#fff;outline:none;-webkit-appearance:none">
+            <sc-for list="{{langs}}" as="lv" hint-placeholder-count="3"><option value="{{ lv.code }}">{{ lv.name }}</option></sc-for>
+          </select>
+          <button onClick="{{testQ}}" aria-label="Test question voice" style="width:54px;flex:none;border:1px solid rgba(0,0,0,.15);background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#1C1A16">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"></path><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <div style="font:600 12px 'Space Grotesk';letter-spacing:.08em;text-transform:uppercase;color:#8A8375;margin-top:14px">Answer voice</div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <select value="{{aLang}}" onChange="{{setALang}}" style="flex:1;min-width:0;border:1px solid rgba(0,0,0,.15);border-radius:14px;padding:14px;font:500 15px 'Space Grotesk';background:#fff;outline:none;-webkit-appearance:none">
+            <sc-for list="{{langs}}" as="lv2" hint-placeholder-count="3"><option value="{{ lv2.code }}">{{ lv2.name }}</option></sc-for>
+          </select>
+          <button onClick="{{testA}}" aria-label="Test answer voice" style="width:54px;flex:none;border:1px solid rgba(0,0,0,.15);background:#fff;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#1C1A16">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor"></path><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"></path></svg>
+          </button>
+        </div>
+        <div style="font:400 12px/1.5 'Space Grotesk';color:#8A8375;margin-top:12px">Tap ▶ to test a voice. Indian &amp; other non-English voices only play if your device has that language pack installed — otherwise the app tells you and falls back to the default voice.</div>
+        <sc-if value="{{noTTS}}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FBF0DC;border:1px solid #E4C88A;border-radius:12px;padding:12px;margin-top:14px;font:500 12px/1.5 'Space Grotesk';color:#7A5B1E">⚠ Text-to-speech isn't supported in this browser. Speaker buttons will be silent.</div>
+        </sc-if>
+        <button onClick="{{closeModal}}" style="border:none;background:var(--accent,#D9552C);color:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk';width:100%;margin-top:18px">Done</button>
+      </sc-if>
+
+      <sc-if value="{{isModalConfirm}}" hint-placeholder-val="{{ false }}">
+        <div style="font:700 19px/1.3 'Space Grotesk'">{{confirmMsg}}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px">
+          <button onClick="{{closeModal}}" style="border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk'">Cancel</button>
+          <button onClick="{{confirmYes}}" style="border:none;background:#C13B2A;color:#fff;border-radius:14px;padding:15px;font:600 15px 'Space Grotesk'">Delete</button>
+        </div>
+      </sc-if>
+
+    </div>
+  </div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#D9552C&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#D9552C&quot;,&quot;#2A5FDB&quot;,&quot;#1F8A5B&quot;,&quot;#7C3AED&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;hiddenDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Behavior&quot;}}">
+class Component extends DCLogic {
+  KEY = 'fcRecall_v1';
+  LANGS = [['en-US','English'],['hi-IN','Hindi'],['te-IN','Telugu'],['kn-IN','Kannada'],['ml-IN','Malayalam'],['ta-IN','Tamil'],['ur-PK','Urdu'],['fa-IR','Persian'],['ar-SA','Arabic']];
+
+  state = { view:'dashboard', query:'', modal:null, mTitle:'', mQ:'', mA:'', bulk:'', editCardId:null, confirmMsg:'', confirmCb:null, deckId:null, toast:'', session:null };
+
+  _d = this._loadData();
+
+  _voices = [];
+
+  componentDidMount(){
+    const synth = (typeof window!=='undefined') && window.speechSynthesis;
+    if(!synth) return;
+    const load = ()=>{ try{ this._voices = synth.getVoices() || []; }catch(e){} };
+    load();
+    // voices populate asynchronously in most browsers — listen and cache
+    try{ synth.addEventListener('voiceschanged', load); }
+    catch(e){ synth.onvoiceschanged = load; }
+    // Chrome sometimes needs a nudge before it emits voiceschanged
+    setTimeout(load, 200); setTimeout(load, 800);
+  }
+
+  _langName(code){ const m = this.LANGS.find(l=>l[0]===code); return m ? m[1] : code; }
+
+  _pickVoice(lang){
+    let voices = (this._voices && this._voices.length) ? this._voices : [];
+    if(!voices.length && window.speechSynthesis){ try{ voices = speechSynthesis.getVoices() || []; }catch(e){} }
+    if(!voices.length) return null;
+    const want = lang.toLowerCase().replace('_','-');
+    const two = want.slice(0,2);
+    return voices.find(v=>v.lang && v.lang.toLowerCase().replace('_','-')===want)
+        || voices.find(v=>v.lang && v.lang.toLowerCase().slice(0,2)===two)
+        || null;
+  }
+
+  _sample(code){
+    const s = { 'en-US':'This is a voice test.', 'hi-IN':'यह एक आवाज़ जाँच है।', 'te-IN':'ఇది ఒక వాయిస్ పరీక్ష.',
+      'kn-IN':'ಇದು ಧ್ವನಿ ಪರೀಕ್ಷೆ.', 'ml-IN':'ഇതൊരു ശബ്ദ പരിശോധനയാണ്.', 'ta-IN':'இது ஒரு குரல் சோதனை.',
+      'ur-PK':'یہ ایک آواز کی جانچ ہے۔', 'fa-IR':'این یک آزمایش صدا است.', 'ar-SA':'هذا اختبار صوتي.' };
+    return s[code] || 'This is a voice test.';
+  }
+
+  _uid(){ return Math.random().toString(36).slice(2,10); }
+  _shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+  _mkCard(q,a){ return { id:this._uid(), q:q, a:a, streak:0, seen:0, right:0 }; }
+
+  _seedData(){
+    return {
+      onboarded:false,
+      settings:{ qLang:'en-US', aLang:'en-US', hiddenOptions:(this.props && this.props.hiddenDefault) || false },
+      stats:{ streak:0, lastDay:'', timeMs:0, answered:0, correct:0 },
+      decks:[
+        { id:this._uid(), title:'World Capitals', cards:[
+          this._mkCard('Capital of France?','Paris'), this._mkCard('Capital of Japan?','Tokyo'),
+          this._mkCard('Capital of Egypt?','Cairo'), this._mkCard('Capital of Brazil?','Brasília'),
+          this._mkCard('Capital of Canada?','Ottawa'), this._mkCard('Capital of Australia?','Canberra'),
+          this._mkCard('Capital of Kenya?','Nairobi'), this._mkCard('Capital of Norway?','Oslo') ] },
+        { id:this._uid(), title:'Hindi Basics', cards:[
+          this._mkCard('Water','पानी (Paani)'), this._mkCard('Book','किताब (Kitaab)'),
+          this._mkCard('Friend','दोस्त (Dost)'), this._mkCard('Food','खाना (Khaana)'),
+          this._mkCard('House','घर (Ghar)'), this._mkCard('Love','प्यार (Pyaar)') ] }
+      ]
+    };
+  }
+
+  _loadData(){
+    try{
+      const raw = localStorage.getItem('fcRecall_v1');
+      if(raw){ const d = JSON.parse(raw); if(d && d.decks) return d; }
+    }catch(e){}
+    return this._seedData();
+  }
+
+  _save(){ try{ localStorage.setItem(this.KEY, JSON.stringify(this._d)); }catch(e){} this.forceUpdate(); }
+
+  _toast(msg){
+    clearTimeout(this._toastT);
+    this.setState({toast:msg});
+    this._toastT = setTimeout(()=>this.setState({toast:''}), 2400);
+  }
+
+  _speak(text, lang){
+    if(!text || !String(text).trim()) return;
+    const synth = window.speechSynthesis;
+    if(!synth || !window.SpeechSynthesisUtterance){ this._toast('Speech isn’t supported on this device'); return; }
+    const run = ()=>{
+      try{
+        synth.cancel();
+        const u = new SpeechSynthesisUtterance(String(text));
+        u.lang = lang; u.rate = 0.9; u.pitch = 1;
+        const v = this._pickVoice(lang);
+        if(v){ u.voice = v; u.lang = v.lang; }
+        else if(lang.slice(0,2) !== 'en'){ this._toast('No ' + this._langName(lang) + ' voice is installed on this device'); }
+        u.onerror = (ev)=>{ if(ev && ev.error && ev.error!=='interrupted' && ev.error!=='canceled') this._toast('Playback failed — voice may be unavailable'); };
+        this._utter = u; // keep a reference so Chrome doesn't garbage-collect mid-speech
+        try{ synth.resume(); }catch(e){}
+        synth.speak(u);
+      }catch(e){ this._toast('Could not play speech'); }
+    };
+    // Voices load asynchronously — if they aren't ready yet, wait for them once.
+    let voices = (this._voices && this._voices.length) ? this._voices : [];
+    if(!voices.length){ try{ voices = synth.getVoices() || []; }catch(e){} this._voices = voices; }
+    if(voices.length){ run(); return; }
+    let fired = false;
+    const once = ()=>{ if(fired) return; fired = true; try{ this._voices = synth.getVoices() || []; }catch(e){} run(); };
+    try{ synth.addEventListener('voiceschanged', once, {once:true}); }catch(e){ synth.onvoiceschanged = once; }
+    setTimeout(once, 350);
+  }
+
+  _deck(id){ return this._d.decks.find(d=>d.id===(id||this.state.deckId)); }
+  _mastered(c){ return c.streak >= 2; }
+
+  _fmtTime(ms){
+    const m = Math.round(ms/60000);
+    if(m < 1) return '<1m';
+    if(m < 60) return m + 'm';
+    return Math.floor(m/60) + 'h ' + (m%60) + 'm';
+  }
+
+  // ---------- session ----------
+  _startSession(order){
+    const deck = this._deck();
+    if(!deck) return;
+    if(deck.cards.length < 4){ this._toast('You need at least 4 cards to practice this deck'); return; }
+    const valid = new Set(deck.cards.map(c=>c.id));
+    const queue = (order || this._shuffle(deck.cards.map(c=>c.id))).filter(id=>valid.has(id));
+    const s = { queue:queue, turns:[], ptr:0, t0:Date.now(), results:null };
+    this._genTurn(s);
+    this.setState({ view:'study', session:s });
+  }
+
+  _genTurn(s){
+    const deck = this._deck();
+    const cardId = s.queue[s.turns.length];
+    const card = deck.cards.find(c=>c.id===cardId);
+    if(!card) return;
+    let pool = [];
+    const seen = new Set([card.a.trim()]);
+    for(const c of this._shuffle(deck.cards)){
+      if(c.id===card.id) continue;
+      const t = c.a.trim();
+      if(!seen.has(t)){ seen.add(t); pool.push(c.a); }
+      if(pool.length===3) break;
+    }
+    const options = this._shuffle([card.a].concat(pool));
+    s.turns.push({
+      cardId:card.id, q:card.q, a:card.a,
+      options:options, correctIdx:options.indexOf(card.a),
+      selectedIdx:null, skipped:false, done:false, revealed:false
+    });
+  }
+
+  _answer(i){
+    const s = this.state.session; if(!s) return;
+    const t = s.turns[s.ptr]; if(!t || t.done) return;
+    t.selectedIdx = i; t.done = true;
+    const correct = i === t.correctIdx;
+    const deck = this._deck();
+    const card = deck && deck.cards.find(c=>c.id===t.cardId);
+    if(card){ card.seen++; if(correct){ card.right++; card.streak++; } else { card.streak = 0; } }
+    const st = this._d.stats;
+    st.answered++; if(correct) st.correct++;
+    this._save();
+  }
+
+  _next(){
+    const s = this.state.session; if(!s) return;
+    if(s.ptr < s.turns.length - 1){ s.ptr++; this.forceUpdate(); return; }
+    if(s.turns.length < s.queue.length){ this._genTurn(s); s.ptr++; this.forceUpdate(); return; }
+    this._end();
+  }
+
+  _skip(){
+    const s = this.state.session; if(!s) return;
+    const t = s.turns[s.ptr];
+    if(t && !t.done){ t.skipped = true; t.done = true; }
+    this._next();
+  }
+
+  _end(){
+    const s = this.state.session; if(!s) return;
+    const st = this._d.stats;
+    st.timeMs += Date.now() - s.t0;
+    const today = new Date().toDateString();
+    if(st.lastDay !== today){
+      const y = new Date(); y.setDate(y.getDate()-1);
+      st.streak = (st.lastDay === y.toDateString()) ? st.streak + 1 : 1;
+      st.lastDay = today;
+    }
+    const deck = this._deck();
+    const rows = []; let correct=0, wrong=0, skipped=0;
+    const wrongIds=[], skipIds=[], rightIds=[];
+    for(const t of s.turns){
+      if(t.skipped || !t.done || t.selectedIdx===null){
+        skipped++; skipIds.push(t.cardId);
+        rows.push({ q:t.q, status:'Skipped', color:'#8A8375', detail:'Answer: ' + t.a });
+      } else if(t.selectedIdx === t.correctIdx){
+        correct++; rightIds.push(t.cardId);
+        rows.push({ q:t.q, status:'Correct', color:'#2E7D4F', detail:'Answer: ' + t.a });
+      } else {
+        wrong++; wrongIds.push(t.cardId);
+        rows.push({ q:t.q, status:'Wrong', color:'#C13B2A', detail:'You picked: ' + t.options[t.selectedIdx] + ' · Correct: ' + t.a });
+      }
+    }
+    const seenIds = new Set(s.turns.map(t=>t.cardId));
+    const unseen = s.queue.filter(id=>!seenIds.has(id));
+    for(const id of unseen){
+      const c = deck && deck.cards.find(c=>c.id===id);
+      if(c) rows.push({ q:c.q, status:'Not seen', color:'#B4AD9E', detail:'Session ended before this card' });
+    }
+    s.results = { rows, correct, wrong, skipped, total:s.queue.length, attempted:correct+wrong,
+      elapsed:Date.now()-s.t0, wrongIds, skipIds:skipIds.concat(unseen), rightIds };
+    this._save();
+    this.setState({ view:'results' });
+  }
+
+  _retryMistakes(){
+    const s = this.state.session; if(!s || !s.results) return;
+    const r = s.results;
+    const order = r.wrongIds.concat(r.skipIds).concat(this._shuffle(r.rightIds));
+    this._startSession(order);
+  }
+
+  // ---------- render ----------
+  renderVals(){
+    const d = this._d, st = this.state, settings = d.settings;
+    const stats = d.stats;
+    const accent = this.props.accent ?? '#D9552C';
+    const v = {
+      accent:accent,
+      tagline:'Flashcards that quiz you back',
+      isDash: st.view==='dashboard', isDeck: st.view==='deck',
+      isStudy: st.view==='study', isResults: st.view==='results',
+      streak: stats.streak,
+      accuracy: stats.answered ? Math.round(stats.correct/stats.answered*100)+'%' : '—',
+      timeSpent: stats.timeMs ? this._fmtTime(stats.timeMs) : '0m',
+      query: st.query, hasQuery: st.query.trim().length>0, noQuery: st.query.trim().length===0,
+      setQuery: (e)=>this.setState({query:e.target.value}),
+      clearQuery: ()=>this.setState({query:''}),
+      toast: st.toast, hasToast: !!st.toast,
+      showOnboarding: !d.onboarded,
+      finishOnboarding: ()=>{ d.onboarded = true; this._save(); },
+      openSettings: ()=>this.setState({modal:'settings'}),
+      closeModal: ()=>this.setState({modal:null}),
+      stop: (e)=>e.stopPropagation(),
+      hasModal: !!st.modal,
+      isModalDeckTitle: st.modal==='newDeck'||st.modal==='editDeck',
+      isModalCard: st.modal==='card', isModalBulk: st.modal==='bulk',
+      isModalSettings: st.modal==='settings', isModalConfirm: st.modal==='confirm',
+      isModalVoice: st.modal==='voice',
+      openVoice: ()=>this.setState({modal:'voice'}),
+      confirmMsg: st.confirmMsg,
+      confirmYes: ()=>{ const cb=st.confirmCb; this.setState({modal:null,confirmCb:null}); if(cb) cb(); },
+      toDash: ()=>this.setState({view:'dashboard', session:null}),
+      deckCount: d.decks.length + (d.decks.length===1?' deck':' decks'),
+      langs: this.LANGS.map(l=>({code:l[0], name:l[1]})),
+      qLang: settings.qLang, aLang: settings.aLang,
+      setQLang: (e)=>{ settings.qLang=e.target.value; this._save(); },
+      setALang: (e)=>{ settings.aLang=e.target.value; this._save(); },
+      testQ: ()=>this._speak(this._sample(settings.qLang), settings.qLang),
+      testA: ()=>this._speak(this._sample(settings.aLang), settings.aLang),
+      noTTS: typeof window!=='undefined' && !window.speechSynthesis,
+      toggleHidden: ()=>{ settings.hiddenOptions=!settings.hiddenOptions; this._save(); },
+      hiddenToggleBg: settings.hiddenOptions ? accent : 'rgba(0,0,0,.18)',
+      hiddenKnobLeft: settings.hiddenOptions ? '23px' : '3px',
+      hiddenChipBg: settings.hiddenOptions ? '#1C1A16' : '#fff',
+      hiddenChipFg: settings.hiddenOptions ? '#F6F2E9' : '#8A8375',
+      mTitle: st.mTitle, mQ: st.mQ, mA: st.mA, bulk: st.bulk,
+      mTitleChange:(e)=>this.setState({mTitle:e.target.value}),
+      mQChange:(e)=>this.setState({mQ:e.target.value}),
+      mAChange:(e)=>this.setState({mA:e.target.value}),
+      bulkChange:(e)=>this.setState({bulk:e.target.value}),
+      newDeckOpen: ()=>this.setState({modal:'newDeck', mTitle:''}),
+      editDeckOpen: ()=>{ const dk=this._deck(); this.setState({modal:'editDeck', mTitle:dk?dk.title:''}); },
+      deckModalTitle: st.modal==='newDeck' ? 'New deck' : 'Rename deck',
+      saveDeckModal: ()=>{
+        const t = st.mTitle.trim();
+        if(!t){ this._toast('Give the deck a title'); return; }
+        if(st.modal==='newDeck'){
+          const dk = { id:this._uid(), title:t, cards:[] };
+          d.decks.unshift(dk);
+          this.setState({modal:null, deckId:dk.id, view:'deck'});
+          this._toast('Deck created — add at least 4 cards to practice');
+        } else {
+          const dk=this._deck(); if(dk) dk.title=t;
+          this.setState({modal:null});
+        }
+        this._save();
+      },
+      delDeckAsk: ()=>{
+        const dk=this._deck(); if(!dk) return;
+        this.setState({modal:'confirm', confirmMsg:'Delete "'+dk.title+'" and all its cards?', confirmCb:()=>{
+          d.decks = d.decks.filter(x=>x.id!==dk.id);
+          this._save();
+          this.setState({view:'dashboard', deckId:null});
+          this._toast('Deck deleted');
+        }});
+      },
+      addCardOpen: ()=>this.setState({modal:'card', editCardId:null, mQ:'', mA:''}),
+      bulkOpen: ()=>this.setState({modal:'bulk', bulk:''}),
+      isEditingCard: !!st.editCardId,
+      cardModalTitle: st.editCardId ? 'Edit card' : 'Add card',
+      saveCard: ()=>{
+        const dk=this._deck(); if(!dk) return;
+        const q=st.mQ.trim(), a=st.mA.trim();
+        if(!q || !a){ this._toast('Both question and answer are required'); return; }
+        if(st.editCardId){
+          const c = dk.cards.find(c=>c.id===st.editCardId);
+          if(c){ c.q=q; c.a=a; }
+          const s = st.session;
+          if(s){ const t=s.turns[s.ptr];
+            if(t && t.cardId===st.editCardId){ t.q=q; if(!t.done){ t.options[t.correctIdx]=a; t.a=a; } } }
+        } else {
+          dk.cards.push(this._mkCard(q,a));
+          if(dk.cards.length<4) this._toast((4-dk.cards.length)+' more card(s) needed to practice');
+        }
+        this._save();
+        this.setState({modal:null, editCardId:null});
+      },
+      delCardFromModal: ()=>{
+        const dk=this._deck(); if(!dk || !st.editCardId) return;
+        dk.cards = dk.cards.filter(c=>c.id!==st.editCardId);
+        const s = st.session;
+        if(s){ s.queue = s.queue.filter((id,i)=> i < s.turns.length || id!==st.editCardId); }
+        this._save();
+        this.setState({modal:null, editCardId:null});
+        this._toast('Card deleted');
+      },
+      saveBulk: ()=>{
+        const dk=this._deck(); if(!dk) return;
+        const lines = st.bulk.split('\n');
+        let added=0, bad=0;
+        for(const line of lines){
+          if(!line.trim()) continue;
+          const idx = line.indexOf('=');
+          if(idx <= 0 || idx === line.length-1){ bad++; continue; }
+          const q = line.slice(0,idx).trim(), a = line.slice(idx+1).trim();
+          if(q && a){ dk.cards.push(this._mkCard(q,a)); added++; } else bad++;
+        }
+        if(!added){ this._toast('No valid lines — use question = answer per line'); return; }
+        this._save();
+        this.setState({modal:null, bulk:''});
+        this._toast('Added '+added+' card'+(added>1?'s':'')+(bad?' · '+bad+' line(s) skipped':''));
+      },
+      practice: ()=>this._startSession(),
+      endSession: ()=>this._end(),
+    };
+
+    // deck list + search
+    v.deckList = d.decks.map(dk=>{
+      const total=dk.cards.length;
+      const mastered=dk.cards.filter(c=>this._mastered(c)).length;
+      const pct = total ? Math.round(mastered/total*100) : 0;
+      return { id:dk.id, title:dk.title, total:total, mastered:mastered, remaining:total-mastered,
+        pct:pct, pctW:pct+'%', open:()=>this.setState({view:'deck', deckId:dk.id, query:''}) };
+    });
+    if(v.hasQuery){
+      const q = st.query.trim().toLowerCase();
+      const hits=[];
+      for(const dk of d.decks){
+        const deckMatch = dk.title.toLowerCase().includes(q);
+        for(const c of dk.cards){
+          if(deckMatch || c.q.toLowerCase().includes(q) || c.a.toLowerCase().includes(q)){
+            hits.push({ q:c.q, a:c.a, deckTitle:dk.title, open:()=>this.setState({view:'deck', deckId:dk.id, query:''}) });
+            if(hits.length>=30) break;
+          }
+        }
+        if(hits.length>=30) break;
+      }
+      v.cardHits = hits;
+      v.searchSummary = hits.length ? hits.length+' matching card'+(hits.length>1?'s':'') : 'No matches found';
+    } else { v.cardHits = []; v.searchSummary=''; }
+
+    // current deck
+    const deck = this._deck();
+    if(deck){
+      const total=deck.cards.length;
+      const mastered=deck.cards.filter(c=>this._mastered(c)).length;
+      v.deckTitle = deck.title;
+      v.deckMastered = mastered; v.deckRemaining = total-mastered;
+      v.deckPct = total?Math.round(mastered/total*100):0; v.deckPctW = v.deckPct+'%';
+      v.deckCardCount = total; v.deckEmpty = total===0;
+      v.needMore = total<4; v.cardsNeeded = Math.max(0,4-total);
+      v.practiceBg = total<4 ? '#B4AD9E' : 'var(--accent,#D9552C)';
+      v.deckCards = deck.cards.map(c=>({
+        q:c.q, a:c.a, mastered:this._mastered(c),
+        edit:()=>this.setState({modal:'card', editCardId:c.id, mQ:c.q, mA:c.a}),
+        del:()=>this.setState({modal:'confirm', confirmMsg:'Delete this card?', confirmCb:()=>{
+          deck.cards = deck.cards.filter(x=>x.id!==c.id); this._save(); this._toast('Card deleted');
+        }})
+      }));
+    }
+
+    // study
+    const s = st.session;
+    if(s && st.view==='study'){
+      const t = s.turns[s.ptr];
+      if(t){
+        v.turnNum = s.ptr+1; v.turnTotal = s.queue.length;
+        v.turnBadge = t.done ? (t.skipped ? 'Skipped' : (t.selectedIdx===t.correctIdx?'Correct ✓':'Incorrect ✗')) : 'Question';
+        v.turnQ = t.q;
+        v.progressW = Math.round((s.ptr+1)/s.queue.length*100)+'%';
+        v.covered = settings.hiddenOptions && !t.revealed && !t.done;
+        v.showOptions = !v.covered;
+        v.reveal = ()=>{ t.revealed=true; this.forceUpdate(); };
+        v.speakQ = ()=>this._speak(t.q, settings.qLang);
+        v.editTurnCard = ()=>this.setState({modal:'card', editCardId:t.cardId, mQ:t.q, mA:t.a});
+        v.options = t.options.map((text,i)=>{
+          let bg='#fff', border='rgba(0,0,0,.1)', fg='#1C1A16', chipBg='rgba(0,0,0,.06)', chipFg='#8A8375', opacity=1;
+          if(t.done){
+            if(i===t.correctIdx){ bg='#E7F3EB'; border='#2E7D4F'; fg='#1C5233'; chipBg='#2E7D4F'; chipFg='#fff'; }
+            else if(i===t.selectedIdx){ bg='#FBEAE6'; border='#C13B2A'; fg='#7A251A'; chipBg='#C13B2A'; chipFg='#fff'; }
+            else { opacity=0.55; }
+          }
+          return { text:text, letter:'ABCD'[i]||'', bg:bg, border:border, fg:fg, chipBg:chipBg, chipFg:chipFg, opacity:opacity,
+            pick:()=>this._answer(i),
+            speak:(e)=>{ e.stopPropagation(); this._speak(text, settings.aLang); } };
+        });
+        v.canBack = s.ptr>0;
+        v.backFg = v.canBack ? '#1C1A16' : '#B4AD9E';
+        v.backOpacity = v.canBack ? 1 : 0.6;
+        v.goBack = ()=>{ if(s.ptr>0){ s.ptr--; this.forceUpdate(); } };
+        v.showSkip = !t.done;
+        v.showNext = t.done;
+        const isLast = s.turns.length===s.queue.length && s.ptr===s.turns.length-1;
+        v.nextLabel = isLast ? 'Finish · See results' : 'Next →';
+        v.skip = ()=>this._skip();
+        v.next = ()=>this._next();
+      }
+    }
+
+    // results
+    if(s && s.results && st.view==='results'){
+      const r = s.results;
+      v.resScore = r.correct + ' / ' + r.total;
+      v.resAccuracy = r.attempted ? Math.round(r.correct/r.attempted*100)+'%' : '—';
+      v.resTime = this._fmtTime(r.elapsed);
+      v.resCorrect = r.correct; v.resWrong = r.wrong; v.resSkipped = r.skipped + (r.total - r.correct - r.wrong - r.skipped);
+      v.resRows = r.rows;
+      v.hasMistakes = (r.wrongIds.length + r.skipIds.length) > 0;
+      v.retryMistakes = ()=>this._retryMistakes();
+    }
+
+    return v;
+  }
+}
+</script>
+</body>
+</html>
