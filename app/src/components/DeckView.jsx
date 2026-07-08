@@ -11,7 +11,12 @@ export default function DeckView({ v }) {
         >
           <BackIcon />
         </button>
-        <div style={{ flex: 1, minWidth: 0, font: "700 20px/1.2 'Space Grotesk'", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.deckTitle}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ font: "700 20px/1.2 'Space Grotesk'", overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.deckTitle}</div>
+          {v.deckCategory && (
+            <div style={{ font: "600 11px 'Space Grotesk'", letterSpacing: '.08em', textTransform: 'uppercase', color: '#8A8375', marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{v.deckCategory}</div>
+          )}
+        </div>
         <button
           onClick={v.editDeckOpen}
           aria-label="Rename deck"
@@ -32,6 +37,19 @@ export default function DeckView({ v }) {
         <div style={{ display: 'flex', gap: 14, marginTop: 10, font: "500 13px 'Space Grotesk'", color: '#8A8375' }}>
           <span style={{ color: '#2E7D4F' }}>● {v.deckMastered} mastered</span>
           <span>● {v.deckRemaining} remaining</span>
+        </div>
+      </div>
+
+      <div
+        onClick={v.toggleRemainingOnly}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, background: '#fff', border: '1px solid rgba(0,0,0,.1)', borderRadius: 14, padding: 14, marginTop: 12, cursor: 'pointer' }}
+      >
+        <div>
+          <div style={{ font: "600 15px 'Space Grotesk'" }}>Practice remaining only</div>
+          <div style={{ font: "400 12px/1.4 'Space Grotesk'", color: '#8A8375', marginTop: 2 }}>Exclude mastered cards from the session</div>
+        </div>
+        <div style={{ width: 48, height: 28, borderRadius: 99, background: v.remToggleBg, position: 'relative', transition: 'background .2s', flex: 'none' }}>
+          <div style={{ position: 'absolute', top: 3, left: v.remKnobLeft, width: 22, height: 22, borderRadius: 99, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.3)', transition: 'left .2s' }} />
         </div>
       </div>
 

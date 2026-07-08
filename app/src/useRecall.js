@@ -19,7 +19,7 @@ export function useRecall() {
 
   const [ui, setUi] = useState({
     view: 'dashboard', query: '', modal: null,
-    mTitle: '', mQ: '', mA: '', bulk: '',
+    mTitle: '', mCat: '', mQ: '', mA: '', bulk: '',
     editCardId: null, confirmMsg: '', confirmCb: null,
     deckId: null, toast: '',
   });
@@ -41,6 +41,15 @@ export function useRecall() {
   }
 
   // ---------- session ----------
+  // Speak the current question once per turn when auto-read is on.
+  function autoReadCurrent(s) {
+    const t = s.turns[s.ptr];
+    if (t && !t.done && !t.autoSpoken && d.settings.autoRead) {
+      t.autoSpoken = true;
+      speak(t.q, d.settings.qLang);
+    }
+  }
+
   function startSession(order) {
     const deck = getDeck();
     if (!deck) return;
@@ -48,12 +57,21 @@ export function useRecall() {
       toast('You need at least 4 cards to practice this deck');
       return;
     }
-    const valid = new Set(deck.cards.map((c) => c.id));
-    const queue = (order || shuffle(deck.cards.map((c) => c.id))).filter((id) => valid.has(id));
+    // "Remaining only" narrows the queue to unmastered cards; distractor
+    // options in genTurn still draw from the whole deck.
+    let pool = deck.cards;
+    if (deck.remainingOnly) pool = deck.cards.filter((c) => !isMastered(c));
+    const valid = new Set(pool.map((c) => c.id));
+    const queue = (order || shuffle(pool.map((c) => c.id))).filter((id) => valid.has(id));
+    if (!queue.length) {
+      toast('All cards are mastered — turn off "Remaining only" to review them');
+      return;
+    }
     const s = { queue, turns: [], ptr: 0, t0: Date.now(), results: null };
     genTurn(s);
     sessionRef.current = s;
     patch({ view: 'study' });
+    autoReadCurrent(s);
   }
 
   function genTurn(s) {
@@ -76,7 +94,7 @@ export function useRecall() {
     s.turns.push({
       cardId: card.id, q: card.q, a: card.a,
       options, correctIdx: options.indexOf(card.a),
-      selectedIdx: null, skipped: false, done: false, revealed: false,
+      selectedIdx: null, skipped: false, done: false, revealed: false, autoSpoken: false,
     });
   }
 
@@ -102,6 +120,8 @@ export function useRecall() {
     const st = d.stats;
     st.answered++;
     if (correct) st.correct++;
+    // Auto-read speaks the answer only when the user picked the correct option.
+    if (correct && d.settings.autoRead) speak(t.a, d.settings.aLang);
     save();
   }
 
@@ -111,12 +131,14 @@ export function useRecall() {
     if (s.ptr < s.turns.length - 1) {
       s.ptr++;
       rerender();
+      autoReadCurrent(s);
       return;
     }
     if (s.turns.length < s.queue.length) {
       genTurn(s);
       s.ptr++;
       rerender();
+      autoReadCurrent(s);
       return;
     }
     end();
@@ -228,25 +250,39 @@ export function useRecall() {
       hiddenKnobLeft: settings.hiddenOptions ? '23px' : '3px',
       hiddenChipBg: settings.hiddenOptions ? '#1C1A16' : '#fff',
       hiddenChipFg: settings.hiddenOptions ? '#F6F2E9' : '#8A8375',
-      mTitle: st.mTitle, mQ: st.mQ, mA: st.mA, bulk: st.bulk,
+      autoRead: settings.autoRead,
+      toggleAutoRead: () => {
+        settings.autoRead = !settings.autoRead;
+        save();
+        // Turning it on mid-question reads the question on the spot.
+        const s = sessionRef.current;
+        if (settings.autoRead && s && st.view === 'study') autoReadCurrent(s);
+      },
+      autoToggleBg: settings.autoRead ? accent : 'rgba(0,0,0,.18)',
+      autoKnobLeft: settings.autoRead ? '23px' : '3px',
+      autoChipBg: settings.autoRead ? '#1C1A16' : '#fff',
+      autoChipFg: settings.autoRead ? '#F6F2E9' : '#8A8375',
+      mTitle: st.mTitle, mCat: st.mCat, mQ: st.mQ, mA: st.mA, bulk: st.bulk,
+      mCatChange: (val) => patch({ mCat: val }),
       mTitleChange: (val) => patch({ mTitle: val }),
       mQChange: (val) => patch({ mQ: val }),
       mAChange: (val) => patch({ mA: val }),
       bulkChange: (val) => patch({ bulk: val }),
-      newDeckOpen: () => patch({ modal: 'newDeck', mTitle: '' }),
-      editDeckOpen: () => { const dk = getDeck(); patch({ modal: 'editDeck', mTitle: dk ? dk.title : '' }); },
-      deckModalTitle: st.modal === 'newDeck' ? 'New deck' : 'Rename deck',
+      newDeckOpen: () => patch({ modal: 'newDeck', mTitle: '', mCat: '' }),
+      editDeckOpen: () => { const dk = getDeck(); patch({ modal: 'editDeck', mTitle: dk ? dk.title : '', mCat: dk ? dk.category || '' : '' }); },
+      deckModalTitle: st.modal === 'newDeck' ? 'New deck' : 'Edit deck',
       saveDeckModal: () => {
         const t = st.mTitle.trim();
         if (!t) { toast('Give the deck a title'); return; }
+        const cat = st.mCat.trim();
         if (st.modal === 'newDeck') {
-          const dk = { id: uid(), title: t, cards: [] };
+          const dk = { id: uid(), title: t, category: cat, remainingOnly: false, cards: [] };
           d.decks.unshift(dk);
           patch({ modal: null, deckId: dk.id, view: 'deck' });
           toast('Deck created — add at least 4 cards to practice');
         } else {
           const dk = getDeck();
-          if (dk) dk.title = t;
+          if (dk) { dk.title = t; dk.category = cat; }
           patch({ modal: null });
         }
         save();
@@ -332,6 +368,25 @@ export function useRecall() {
         pct, pctW: pct + '%', open: () => patch({ view: 'deck', deckId: dk.id, query: '' }),
       };
     });
+
+    // group decks by category (order of first appearance; uncategorized last)
+    v.categories = [];
+    for (const dk of d.decks) {
+      const c = (dk.category || '').trim();
+      if (c && !v.categories.includes(c)) v.categories.push(c);
+    }
+    const countLabel = (n) => n + (n === 1 ? ' deck' : ' decks');
+    if (!v.categories.length) {
+      v.deckGroups = [{ label: 'Your decks', count: countLabel(d.decks.length), decks: v.deckList }];
+    } else {
+      const byCat = {};
+      d.decks.forEach((dk, i) => {
+        const c = (dk.category || '').trim() || '\0';
+        (byCat[c] = byCat[c] || []).push(v.deckList[i]);
+      });
+      v.deckGroups = v.categories.map((c) => ({ label: c, count: countLabel(byCat[c].length), decks: byCat[c] }));
+      if (byCat['\0']) v.deckGroups.push({ label: 'Uncategorized', count: countLabel(byCat['\0'].length), decks: byCat['\0'] });
+    }
     if (v.hasQuery) {
       const q = st.query.trim().toLowerCase();
       const hits = [];
@@ -362,6 +417,11 @@ export function useRecall() {
       v.deckCardCount = total; v.deckEmpty = total === 0;
       v.needMore = total < 4; v.cardsNeeded = Math.max(0, 4 - total);
       v.practiceBg = total < 4 ? '#B4AD9E' : `var(--accent, ${accent})`;
+      v.deckCategory = (deck.category || '').trim();
+      v.remainingOnly = !!deck.remainingOnly;
+      v.toggleRemainingOnly = () => { deck.remainingOnly = !deck.remainingOnly; save(); };
+      v.remToggleBg = deck.remainingOnly ? accent : 'rgba(0,0,0,.18)';
+      v.remKnobLeft = deck.remainingOnly ? '23px' : '3px';
       v.deckCards = deck.cards.map((c) => ({
         id: c.id, q: c.q, a: c.a, mastered: isMastered(c),
         edit: () => patch({ modal: 'card', editCardId: c.id, mQ: c.q, mA: c.a }),

@@ -50,12 +50,14 @@ export function fmtTime(ms) {
 export function seedData() {
   return {
     onboarded: false,
-    settings: { qLang: 'en-US', aLang: 'en-US', hiddenOptions: HIDDEN_DEFAULT },
+    settings: { qLang: 'en-US', aLang: 'en-US', hiddenOptions: HIDDEN_DEFAULT, autoRead: false },
     stats: { streak: 0, lastDay: '', timeMs: 0, answered: 0, correct: 0 },
     decks: [
       {
         id: uid(),
         title: 'World Capitals',
+        category: 'Geography',
+        remainingOnly: false,
         cards: [
           mkCard('Capital of France?', 'Paris'),
           mkCard('Capital of Japan?', 'Tokyo'),
@@ -70,6 +72,8 @@ export function seedData() {
       {
         id: uid(),
         title: 'Hindi Basics',
+        category: 'Languages',
+        remainingOnly: false,
         cards: [
           mkCard('Water', 'पानी (Paani)'),
           mkCard('Book', 'किताब (Kitaab)'),
@@ -83,12 +87,22 @@ export function seedData() {
   };
 }
 
+// Fill in fields added after v1 so data saved by older versions keeps working.
+function normalize(d) {
+  if (typeof d.settings.autoRead !== 'boolean') d.settings.autoRead = false;
+  for (const dk of d.decks) {
+    if (typeof dk.category !== 'string') dk.category = '';
+    if (typeof dk.remainingOnly !== 'boolean') dk.remainingOnly = false;
+  }
+  return d;
+}
+
 export function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const d = JSON.parse(raw);
-      if (d && d.decks) return d;
+      if (d && d.decks && d.settings) return normalize(d);
     }
   } catch (e) {}
   return seedData();

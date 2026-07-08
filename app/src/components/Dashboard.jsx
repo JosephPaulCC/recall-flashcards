@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { SettingsIcon, SearchIcon } from '../icons';
 
 export default function Dashboard({ v }) {
@@ -69,29 +70,33 @@ export default function Dashboard({ v }) {
 
       {v.noQuery && (
         <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <div style={{ font: "600 12px 'Space Grotesk'", letterSpacing: '.1em', textTransform: 'uppercase', color: '#8A8375' }}>Your decks</div>
-            <div style={{ font: "500 12px 'Space Grotesk'", color: '#8A8375' }}>{v.deckCount}</div>
-          </div>
-          {v.deckList.map((dk) => (
-            <div
-              key={dk.id}
-              onClick={dk.open}
-              style={{ background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 18, padding: 18, cursor: 'pointer', boxShadow: '0 1px 4px rgba(28,26,22,.04)' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
-                <div style={{ font: "600 17px/1.3 'Space Grotesk'" }}>{dk.title}</div>
-                <div style={{ font: "700 15px 'Space Grotesk'", color: 'var(--accent,#D9552C)', flex: 'none' }}>{dk.pct}%</div>
+          {v.deckGroups.map((g, gi) => (
+            <Fragment key={g.label}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: gi > 0 ? 10 : 0 }}>
+                <div style={{ font: "600 12px 'Space Grotesk'", letterSpacing: '.1em', textTransform: 'uppercase', color: '#8A8375' }}>{g.label}</div>
+                <div style={{ font: "500 12px 'Space Grotesk'", color: '#8A8375' }}>{g.count}</div>
               </div>
-              <div style={{ height: 6, background: 'rgba(0,0,0,.07)', borderRadius: 99, marginTop: 12, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'var(--accent,#D9552C)', borderRadius: 99, width: dk.pctW }} />
-              </div>
-              <div style={{ display: 'flex', gap: 14, marginTop: 10, font: "500 12px 'Space Grotesk'", color: '#8A8375' }}>
-                <span>{dk.total} cards</span>
-                <span style={{ color: '#2E7D4F' }}>{dk.mastered} mastered</span>
-                <span>{dk.remaining} remaining</span>
-              </div>
-            </div>
+              {g.decks.map((dk) => (
+                <div
+                  key={dk.id}
+                  onClick={dk.open}
+                  style={{ background: '#fff', border: '1px solid rgba(0,0,0,.08)', borderRadius: 18, padding: 18, cursor: 'pointer', boxShadow: '0 1px 4px rgba(28,26,22,.04)' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10 }}>
+                    <div style={{ font: "600 17px/1.3 'Space Grotesk'" }}>{dk.title}</div>
+                    <div style={{ font: "700 15px 'Space Grotesk'", color: 'var(--accent,#D9552C)', flex: 'none' }}>{dk.pct}%</div>
+                  </div>
+                  <div style={{ height: 6, background: 'rgba(0,0,0,.07)', borderRadius: 99, marginTop: 12, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', background: 'var(--accent,#D9552C)', borderRadius: 99, width: dk.pctW }} />
+                  </div>
+                  <div style={{ display: 'flex', gap: 14, marginTop: 10, font: "500 12px 'Space Grotesk'", color: '#8A8375' }}>
+                    <span>{dk.total} cards</span>
+                    <span style={{ color: '#2E7D4F' }}>{dk.mastered} mastered</span>
+                    <span>{dk.remaining} remaining</span>
+                  </div>
+                </div>
+              ))}
+            </Fragment>
           ))}
           <button
             onClick={v.newDeckOpen}

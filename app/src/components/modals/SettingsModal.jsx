@@ -30,6 +30,18 @@ export default function SettingsModal({ v }) {
           <div style={{ position: 'absolute', top: 3, left: v.hiddenKnobLeft, width: 22, height: 22, borderRadius: 99, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.3)', transition: 'left .2s' }} />
         </div>
       </div>
+      <div
+        onClick={v.toggleAutoRead}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#fff', border: '1px solid rgba(0,0,0,.1)', borderRadius: 14, padding: 14, marginTop: 10, cursor: 'pointer' }}
+      >
+        <div>
+          <div style={{ font: "600 15px 'Space Grotesk'" }}>Auto read aloud</div>
+          <div style={{ font: "400 12px/1.4 'Space Grotesk'", color: '#8A8375', marginTop: 2 }}>Speak each question, and the answer when you pick correctly</div>
+        </div>
+        <div style={{ width: 48, height: 28, borderRadius: 99, background: v.autoToggleBg, position: 'relative', transition: 'background .2s', flex: 'none' }}>
+          <div style={{ position: 'absolute', top: 3, left: v.autoKnobLeft, width: 22, height: 22, borderRadius: 99, background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.3)', transition: 'left .2s' }} />
+        </div>
+      </div>
       {v.noTTS && (
         <div style={{ background: '#FBF0DC', border: '1px solid #E4C88A', borderRadius: 12, padding: 12, marginTop: 14, font: "500 12px/1.5 'Space Grotesk'", color: '#7A5B1E' }}>
           ⚠ Text-to-speech isn't supported in this browser. Speaker buttons will be silent.

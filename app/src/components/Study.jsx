@@ -33,6 +33,13 @@ export default function Study({ v }) {
         </div>
         <div style={{ font: "600 13px 'Space Grotesk'", color: '#8A8375', flex: 'none' }}>{v.turnNum} / {v.turnTotal}</div>
         <button
+          onClick={v.toggleAutoRead}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(0,0,0,.12)', background: v.autoChipBg, color: v.autoChipFg, borderRadius: 99, padding: '7px 11px', font: "600 11px 'Space Grotesk'", flex: 'none', whiteSpace: 'nowrap' }}
+        >
+          <SpeakerIcon width={13} height={13} />
+          Auto read
+        </button>
+        <button
           onClick={v.toggleHidden}
           style={{ display: 'flex', alignItems: 'center', gap: 6, border: '1px solid rgba(0,0,0,.12)', background: v.hiddenChipBg, color: v.hiddenChipFg, borderRadius: 99, padding: '7px 11px', font: "600 11px 'Space Grotesk'", flex: 'none', whiteSpace: 'nowrap' }}
         >
